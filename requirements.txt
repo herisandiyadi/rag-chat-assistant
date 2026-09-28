@@ -6,10 +6,13 @@ psycopg2-binary==2.9.9
 pydantic>=2.0
 pydantic-settings==2.2.1
 openai==1.17.0
-sentence-transformers==2.2.2
 qdrant-client==1.7.0
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 python-multipart==0.0.9
 python-dotenv==1.0.0
 gunicorn==21.2.0
+# ponytail: sentence-transformers (e5-base) sengaja dihapus — dummy_embed masih
+# dipakai. Saat upgrade embedding asli: tambah sentence-transformers==2.2.2 +
+# ganti dummy_embed() dengan SentenceTransformer("intfloat/multilingual-e5-base").encode()
+# dan mount cache model ke volume agar model tidak unduh ulang tiap build.

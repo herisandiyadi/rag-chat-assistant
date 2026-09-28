@@ -1,9 +1,13 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import os
 
 # Database URL
-DATABASE_URL = "postgresql+psycopg2://ragchat:ragchat123@postgres:5432/rag_chat_db"
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql+psycopg2://ragchat:ragchat123@localhost:5432/rag_chat_db"
+)
 
 # Create engine
 engine = create_engine(DATABASE_URL, echo=False)

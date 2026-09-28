@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:14
-    container_name: rag_chat_postgres
+    container_name: rag_postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-ragchat}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ragchat123}
@@ -16,7 +16,7 @@ services:
 
   qdrant:
     image: qdrant/qdrant:v1.8.0
-    container_name: rag_chat_qdrant
+    container_name: rag_qdrant
     volumes:
       - qdrant_data:/qdrant/storage
     ports:
@@ -25,17 +25,18 @@ services:
 
   fastapi-app:
     build: .
-    container_name: rag_chat_fastapi
+    container_name: rag_fastapi
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-ragchat}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-ragchat123}
-      - POSTGRES_DB=${POSTGRES_DB:-rag_chat_db}
+      - POSTGRES_USER=ragchat
+      - POSTGRES_PASSWORD=ragchat123
+      - POSTGRES_DB=rag_chat_db
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
       - QDRANT_HOST=qdrant
       - QDRANT_PORT=6333
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY:-}
+      - ELEVENLABS_VOICE_ID=${ELEVENLABS_VOICE_ID:-}
       - JWT_SECRET=${JWT_SECRET:-changeme}
     ports:
       - "8000:8000"

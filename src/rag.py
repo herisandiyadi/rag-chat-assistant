@@ -83,6 +83,16 @@ def search_scoped(query_vec, access_filter, k=4, score_threshold=0.7):
     return [(h.score, h.payload) for h in hits]
 
 
+def ensure_collection(client):
+    """BUG-010 fix: auto-create collection if missing (prevents silent 404)."""
+    if not client.collection_exists(COLLECTION):
+        from qdrant_client.models import VectorParams, Distance
+        client.create_collection(
+            collection_name=COLLECTION,
+            vectors_config=VectorParams(size=VECTOR_SIZE, distance=Distance.COSINE),
+        )
+
+
 def decide_response(db: Session, user: User, question: str, k=4, threshold=0.7):
     """Core 3-condition logic (desain §6).
 
@@ -90,6 +100,10 @@ def decide_response(db: Session, user: User, question: str, k=4, threshold=0.7):
       kondisi: 'jawab' | 'tidak_berhak' | 'tidak_ditemukan'
     """
     query_vec = dummy_embed(question)
+
+    # BUG-010 fix: ensure collection exists before searching
+    client = get_qdrant()
+    ensure_collection(client)
 
     # 1) Scoped search — what the user is allowed to read
     scoped = search_scoped(query_vec, build_access_filter(user, db), k=k, score_threshold=threshold)
