@@ -1,0 +1,167 @@
+Requirement already satisfied: sqlalchemy in /usr/local/lib/python3.10/dist-packages (2.0.54)
+Collecting openai
+  Using cached openai-3.19.2-py3-none-any.whl (2.1 MB)
+Collecting sentence-transformers
+  Using cached sentence_transformers-6.1.0-py3-none-any.whl (740 kB)
+Requirement already satisfied: pydantic in /usr/local/lib/python3.10/dist-packages (2.13.5)
+Requirement already satisfied: typing-extensions>=4.6.0 in /usr/local/lib/python3.10/dist-packages (from sqlalchemy) (4.16.0)
+Requirement already satisfied: greenlet>=1 in /usr/local/lib/python3.10/dist-packages (from sqlalchemy) (3.5.6)
+Collecting sniffio
+  Using cached sniffio-1.3.1-py3-none-any.whl (10 kB)
+Collecting httpx2<3,>=2.12.0
+  Using cached httpx2-2.13.1-py3-none-any.whl (95 kB)
+Requirement already satisfied: anyio<5,>=4.10.0 in /usr/local/lib/python3.10/dist-packages (from openai) (4.15.1)
+Collecting jiter<1,>=0.16.0
+  Using cached jiter-0.17.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (348 kB)
+Requirement already satisfied: huggingface-hub<2.0.0,>=1.3.0 in /usr/local/lib/python3.10/dist-packages (from sentence-transformers) (1.32.0)
+Requirement already satisfied: tokenizers>=0.19 in /usr/local/lib/python3.10/dist-packages (from sentence-transformers) (0.23.2)
+Collecting torch>=2.2
+  Using cached torch-2.14.0-cp310-cp310-manylinux_2_28_x86_64.whl (554.6 MB)
+Requirement already satisfied: numpy>=1.24.0 in /usr/local/lib/python3.10/dist-packages (from sentence-transformers) (2.2.6)
+Collecting scipy>=1.0.0
+  Using cached scipy-1.15.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (37.7 MB)
+Collecting transformers<6.0.0,>=5.0.0
+  Using cached transformers-5.17.0-py3-none-any.whl (12.3 MB)
+Collecting scikit-learn>=1.1.0
+  Using cached scikit_learn-1.7.2-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (9.7 MB)
+Requirement already satisfied: tqdm>=4.0.0 in /usr/local/lib/python3.10/dist-packages (from sentence-transformers) (4.70.1)
+Requirement already satisfied: annotated-types>=0.6.0 in /usr/local/lib/python3.10/dist-packages (from pydantic) (0.8.0)
+Requirement already satisfied: typing-inspection>=0.4.2 in /usr/local/lib/python3.10/dist-packages (from pydantic) (0.4.4)
+Requirement already satisfied: pydantic-core==2.46.5 in /usr/local/lib/python3.10/dist-packages (from pydantic) (2.46.5)
+Requirement already satisfied: idna>=2.8 in /usr/lib/python3/dist-packages (from anyio<5,>=4.10.0->openai) (3.3)
+Requirement already satisfied: exceptiongroup>=1.0.2 in /usr/local/lib/python3.10/dist-packages (from anyio<5,>=4.10.0->openai) (1.3.1)
+Collecting idna>=2.8
+  Using cached idna-3.20-py3-none-any.whl (69 kB)
+Collecting httpcore2==2.13.1
+  Using cached httpcore2-2.13.1-py3-none-any.whl (83 kB)
+Collecting truststore>=0.10
+  Using cached truststore-0.10.4-py3-none-any.whl (18 kB)
+Requirement already satisfied: h11>=0.16 in /usr/local/lib/python3.10/dist-packages (from httpcore2==2.13.1->httpx2<3,>=2.12.0->openai) (0.16.0)
+Requirement already satisfied: httpx<1,>=0.23.0 in /usr/local/lib/python3.10/dist-packages (from huggingface-hub<2.0.0,>=1.3.0->sentence-transformers) (0.28.1)
+Requirement already satisfied: pyyaml>=5.1 in /usr/local/lib/python3.10/dist-packages (from huggingface-hub<2.0.0,>=1.3.0->sentence-transformers) (6.0.3)
+Requirement already satisfied: filelock>=3.10.0 in /usr/local/lib/python3.10/dist-packages (from huggingface-hub<2.0.0,>=1.3.0->sentence-transformers) (4.0.1)
+Requirement already satisfied: fsspec>=2023.5.0 in /usr/local/lib/python3.10/dist-packages (from huggingface-hub<2.0.0,>=1.3.0->sentence-transformers) (2026.9.0)
+Requirement already satisfied: hf-xet<2.0.0,>=1.5.2 in /usr/local/lib/python3.10/dist-packages (from huggingface-hub<2.0.0,>=1.3.0->sentence-transformers) (1.6.0)
+Requirement already satisfied: click<9.0.0,>=8.4.2 in /usr/local/lib/python3.10/dist-packages (from huggingface-hub<2.0.0,>=1.3.0->sentence-transformers) (8.5.0)
+Requirement already satisfied: tomli>=1.1.0 in /usr/local/lib/python3.10/dist-packages (from huggingface-hub<2.0.0,>=1.3.0->sentence-transformers) (2.4.1)
+Requirement already satisfied: packaging>=20.9 in /usr/lib/python3/dist-packages (from huggingface-hub<2.0.0,>=1.3.0->sentence-transformers) (21.3)
+Collecting threadpoolctl>=3.1.0
+  Using cached threadpoolctl-3.7.0-py3-none-any.whl (26 kB)
+Collecting joblib>=1.2.0
+  Using cached joblib-1.6.0-py3-none-any.whl (306 kB)
+Requirement already satisfied: sympy>=1.13.3 in /usr/local/lib/python3.10/dist-packages (from torch>=2.2->sentence-transformers) (1.14.0)
+Collecting nvidia-nvshmem-cu13==3.4.5
+  Using cached nvidia_nvshmem_cu13-3.4.5-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (60.4 MB)
+Requirement already satisfied: jinja2 in /usr/lib/python3/dist-packages (from torch>=2.2->sentence-transformers) (3.0.3)
+Collecting setuptools>=77.0.3
+  Using cached setuptools-84.0.0-py3-none-any.whl (818 kB)
+Collecting networkx>=2.5.1
+  Using cached networkx-3.4.2-py3-none-any.whl (1.7 MB)
+Collecting cuda-toolkit[cublas,cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.3
+  Using cached cuda_toolkit-13.0.3.0-py2.py3-none-any.whl (2.5 kB)
+Collecting cuda-bindings<14,>=13.0.3
+  Using cached cuda_bindings-13.4.3-cp310-cp310-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (7.2 MB)
+Collecting nvidia-nccl-cu13==2.30.7
+  Using cached nvidia_nccl_cu13-2.30.7-py3-none-manylinux_2_18_x86_64.whl (216.0 MB)
+Collecting triton~=3.8.0
+  Using cached triton-3.8.0-cp310-cp310-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (247.8 MB)
+Collecting nvidia-cusparselt-cu13==0.8.1
+  Using cached nvidia_cusparselt_cu13-0.8.1-py3-none-manylinux2014_x86_64.whl (170.1 MB)
+Collecting nvidia-cudnn-cu13==9.24.0.43
+  Downloading nvidia_cudnn_cu13-9.24.0.43-py3-none-manylinux_2_27_x86_64.whl (553.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 553.1/553.1 MB 830.6 kB/s eta 0:00:00
+Collecting nvidia-nvjitlink<14,>=13.0.88
+  Downloading nvidia_nvjitlink-13.4.92-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (42.5 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 42.5/42.5 MB 2.0 MB/s eta 0:00:00
+Collecting nvidia-nvtx==13.0.85.*
+  Downloading nvidia_nvtx-13.0.85-py3-none-manylinux1_x86_64.manylinux_2_5_x86_64.whl (148 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 148.0/148.0 KB 1.8 MB/s eta 0:00:00
+Collecting nvidia-cuda-runtime==13.0.96.*
+  Downloading nvidia_cuda_runtime-13.0.96-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 254.0 kB/s eta 0:00:00
+Collecting nvidia-cufile==1.15.1.6.*
+  Downloading nvidia_cufile-1.15.1.6-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 247.4 kB/s eta 0:00:00
+Collecting nvidia-cusparse==12.6.3.3.*
+  Downloading nvidia_cusparse-12.6.3.3-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (145.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸        117.2/145.9 MB 422.1 kB/s eta 0:01:09
+ERROR: Exception:
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/pip/_vendor/urllib3/response.py", line 438, in _error_catcher
+    yield
+  File "/usr/lib/python3/dist-packages/pip/_vendor/urllib3/response.py", line 519, in read
+    data = self._fp.read(amt) if not fp_closed else b""
+  File "/usr/lib/python3/dist-packages/pip/_vendor/cachecontrol/filewrapper.py", line 90, in read
+    data = self.__fp.read(amt)
+  File "/usr/lib/python3.10/http/client.py", line 471, in read
+    s = self.fp.read(amt)
+  File "/usr/lib/python3.10/socket.py", line 705, in readinto
+    return self._sock.recv_into(b)
+  File "/usr/lib/python3.10/ssl.py", line 1303, in recv_into
+    return self.read(nbytes, buffer)
+  File "/usr/lib/python3.10/ssl.py", line 1159, in read
+    return self._sslobj.read(len, buffer)
+TimeoutError: The read operation timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/pip/_internal/cli/base_command.py", line 165, in exc_logging_wrapper
+    status = run_func(*args)
+  File "/usr/lib/python3/dist-packages/pip/_internal/cli/req_command.py", line 205, in wrapper
+    return func(self, options, args)
+  File "/usr/lib/python3/dist-packages/pip/_internal/commands/install.py", line 339, in run
+    requirement_set = resolver.resolve(
+  File "/usr/lib/python3/dist-packages/pip/_internal/resolution/resolvelib/resolver.py", line 94, in resolve
+    result = self._result = resolver.resolve(
+  File "/usr/lib/python3/dist-packages/pip/_vendor/resolvelib/resolvers.py", line 481, in resolve
+    state = resolution.resolve(requirements, max_rounds=max_rounds)
+  File "/usr/lib/python3/dist-packages/pip/_vendor/resolvelib/resolvers.py", line 373, in resolve
+    failure_causes = self._attempt_to_pin_criterion(name)
+  File "/usr/lib/python3/dist-packages/pip/_vendor/resolvelib/resolvers.py", line 213, in _attempt_to_pin_criterion
+    criteria = self._get_updated_criteria(candidate)
+  File "/usr/lib/python3/dist-packages/pip/_vendor/resolvelib/resolvers.py", line 204, in _get_updated_criteria
+    self._add_to_criteria(criteria, requirement, parent=candidate)
+  File "/usr/lib/python3/dist-packages/pip/_vendor/resolvelib/resolvers.py", line 172, in _add_to_criteria
+    if not criterion.candidates:
+  File "/usr/lib/python3/dist-packages/pip/_vendor/resolvelib/structs.py", line 151, in __bool__
+    return bool(self._sequence)
+  File "/usr/lib/python3/dist-packages/pip/_internal/resolution/resolvelib/found_candidates.py", line 155, in __bool__
+    return any(self)
+  File "/usr/lib/python3/dist-packages/pip/_internal/resolution/resolvelib/found_candidates.py", line 143, in <genexpr>
+    return (c for c in iterator if id(c) not in self._incompatible_ids)
+  File "/usr/lib/python3/dist-packages/pip/_internal/resolution/resolvelib/found_candidates.py", line 47, in _iter_built
+    candidate = func()
+  File "/usr/lib/python3/dist-packages/pip/_internal/resolution/resolvelib/factory.py", line 215, in _make_candidate_from_link
+    self._link_candidate_cache[link] = LinkCandidate(
+  File "/usr/lib/python3/dist-packages/pip/_internal/resolution/resolvelib/candidates.py", line 288, in __init__
+    super().__init__(
+  File "/usr/lib/python3/dist-packages/pip/_internal/resolution/resolvelib/candidates.py", line 158, in __init__
+    self.dist = self._prepare()
+  File "/usr/lib/python3/dist-packages/pip/_internal/resolution/resolvelib/candidates.py", line 227, in _prepare
+    dist = self._prepare_distribution()
+  File "/usr/lib/python3/dist-packages/pip/_internal/resolution/resolvelib/candidates.py", line 299, in _prepare_distribution
+    return preparer.prepare_linked_requirement(self._ireq, parallel_builds=True)
+  File "/usr/lib/python3/dist-packages/pip/_internal/operations/prepare.py", line 487, in prepare_linked_requirement
+    return self._prepare_linked_requirement(req, parallel_builds)
+  File "/usr/lib/python3/dist-packages/pip/_internal/operations/prepare.py", line 532, in _prepare_linked_requirement
+    local_file = unpack_url(
+  File "/usr/lib/python3/dist-packages/pip/_internal/operations/prepare.py", line 214, in unpack_url
+    file = get_http_url(
+  File "/usr/lib/python3/dist-packages/pip/_internal/operations/prepare.py", line 94, in get_http_url
+    from_path, content_type = download(link, temp_dir.path)
+  File "/usr/lib/python3/dist-packages/pip/_internal/network/download.py", line 146, in __call__
+    for chunk in chunks:
+  File "/usr/lib/python3/dist-packages/pip/_internal/cli/progress_bars.py", line 304, in _rich_progress_bar
+    for chunk in iterable:
+  File "/usr/lib/python3/dist-packages/pip/_internal/network/utils.py", line 63, in response_chunks
+    for chunk in response.raw.stream(
+  File "/usr/lib/python3/dist-packages/pip/_vendor/urllib3/response.py", line 576, in stream
+    data = self.read(amt=amt, decode_content=decode_content)
+  File "/usr/lib/python3/dist-packages/pip/_vendor/urllib3/response.py", line 512, in read
+    with self._error_catcher():
+  File "/usr/lib/python3.10/contextlib.py", line 153, in __exit__
+    self.gen.throw(typ, value, traceback)
+  File "/usr/lib/python3/dist-packages/pip/_vendor/urllib3/response.py", line 443, in _error_catcher
+    raise ReadTimeoutError(self._pool, None, "Read timed out.")
+pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Read timed out.
