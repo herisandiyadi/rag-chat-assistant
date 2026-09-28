@@ -1,9 +1,11 @@
 """Chat service with RAG integration."""
 
 import logging
+import re
 from typing import AsyncGenerator, Dict, Any, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
 from src.core.db import get_db
 from src.core.security import resolve_access_permission
@@ -14,10 +16,37 @@ from src.services.openai_service import OpenAIService
 
 logger = logging.getLogger(__name__)
 
+# Sapaan sederhana — tidak perlu RAG search, cukup balas natural.
+# Pola: hai, halo, hi, hello, selamat pagi/siang/sore/malam, halo apa kabar, dll.
+GREETING_PATTERN = re.compile(
+    r"^\s*(hai|haii|hai\s|halo|haloo|hi|hello|hei|hey|"
+    r"selamat\s+(pagi|siang|sore|malam)|assalamu'alaikum|assalamualaikum)"
+    r"[\s,.!?]*"
+    r"(\s*(apa\s+kabar|kabar|semua|semua\s+nya|all|semua\s+baik))?"
+    r"[\s,.!?]*$",
+    re.IGNORECASE,
+)
+
+GREETING_RESPONSE = (
+    "Hai! Ada yang bisa saya bantu? "
+    "Anda dapat menanyakan seputar dokumen departemen sesuai level akses Anda."
+)
+
+
+def is_greeting(question: str) -> bool:
+    """Deteksi sapaan atau basa-basi ringan (tidak butuh RAG)."""
+    if not question:
+        return False
+    q = question.strip()
+    # Sapaan pendek saja — kalau panjang, kemungkinan besar pertanyaan sungguhan
+    if len(q) > 60:
+        return False
+    return bool(GREETING_PATTERN.match(q))
+
 
 class ChatService:
     """Service for handling chat interactions with RAG."""
-    
+
     @staticmethod
     async def ask_question(
         db: AsyncSession,
@@ -27,37 +56,50 @@ class ChatService:
     ) -> Dict[str, Any]:
         """
         Ask a question and get answer based on RAG.
-        
+
         Returns response with one of three statuses:
         - "success": Found relevant documents and user has access
         - "access_denied": Document exists but user lacks permission
         - "not_found": No relevant documents found
         """
+        # Sapaan → balas natural, jangan cari dokumen (bug fix)
+        if is_greeting(question):
+            logger.info(f"Greeting detected for user {user_id}: {question!r}")
+            return {
+                "session_id": session_id or str(user_id),
+                "answer": GREETING_RESPONSE,
+                "sources": [],
+                "status": "greeting",
+            }
+
         vector_search = get_vector_search()
         openai_service = OpenAIService()
-        
-        # Get user info
+
+        # Get user info (PK adalah UUID, jadi query by id via select)
         user = await db.get(User, user_id)
         if not user:
             raise ValueError("User not found")
-        
+
         # Search for relevant chunks
         results = vector_search.search(
             query=question,
             department_filter=user.department_id,
             min_level_filter=user.level,
         )
-        
+
         # Check access and categorize
         sources = []
         access_status = "not_found"
-        
+
         if results:
             # Check access for each source
             for point in results:
                 doc_id = point.payload.get("doc_id")
-                doc = await db.query(Document).filter_by(doc_id=doc_id).first()
-                
+                result = await db.execute(
+                    select(Document).where(Document.doc_id == doc_id)
+                )
+                doc = result.scalar_one_or_none()
+
                 if doc:
                     has_access, reason = resolve_access_permission(
                         user_department_id=user.department_id,
@@ -66,7 +108,7 @@ class ChatService:
                         document_department_id=doc.department_id,
                         document_min_level=doc.min_level,
                     )
-                    
+
                     if has_access:
                         sources.append({
                             "doc_id": doc_id,
@@ -86,20 +128,20 @@ class ChatService:
                             "doc_id": doc_id,
                             "score": point.score,
                         })
-        
+
         # Generate answer if we have access and sources
         answer = ""
         if access_status == "success" and sources:
             context = "\n\n".join([s["text_snippet"] for s in sources[:4]])
             answer = await openai_service.generate_answer(question, context)
-        
+
         return {
             "session_id": session_id or str(user_id),
             "answer": answer,
             "sources": sources,
             "status": access_status,
         }
-    
+
     @staticmethod
     async def stream_answer(
         db: AsyncSession,
@@ -111,12 +153,12 @@ class ChatService:
         # For now, return the full answer as a single token
         # Later can be enhanced with streaming from OpenAI API
         response = await ChatService.ask_question(db, user_id, question, session_id)
-        
+
         # Simulate token streaming
         tokens = response["answer"].split()
         for token in tokens:
             yield token
-        
+
         # Yield sources if available
         if response["sources"]:
             yield f"\n\nSources: {response['sources']}"
