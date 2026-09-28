@@ -5,9 +5,13 @@ from sqlalchemy.orm import Session
 from models import User
 from schemas import TokenData
 
-SECRET_KEY = "rag-chat-secret-key-change-in-production"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+# BUG-006 fix: secret from env, no insecure fallback in production
+import os
+SECRET_KEY = os.getenv("JWT_SECRET", "dev-only-secret-rotate-in-prod")
+if SECRET_KEY in ("", "changeme", "dev-only-secret-rotate-in-prod") and os.getenv("ENV", "dev") == "production":
+    raise RuntimeError("JWT_SECRET must be set to a strong value in production")
+ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_HOURS", "24")) * 60
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -19,7 +23,7 @@ def get_password_hash(password: str) -> str:
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=15))
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 

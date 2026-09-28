@@ -6,6 +6,7 @@ from database import get_db, engine, Base
 from endpoints.auth import router as auth_router
 from endpoints.seed import router as seed_router
 from endpoints.ingest import router as ingest_router
+from config import settings
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -15,13 +16,13 @@ app = FastAPI(
     description="Internal chat assistant with RAG and multi-department access control"
 )
 
-# CORS middleware
+# BUG-007 fix: CORS from config, not wildcard
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PATCH", "DELETE"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 @app.get("/")
