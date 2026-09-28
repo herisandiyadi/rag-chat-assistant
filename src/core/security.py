@@ -8,6 +8,7 @@ from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
 from config.settings import settings
 from src.core.db import get_db
@@ -18,7 +19,7 @@ from src.models.department import Department
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # OAuth2 scheme
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/token")
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -65,7 +66,8 @@ async def get_current_user(
     except JWTError:
         raise credentials_exception
 
-    user = await db.get(User, username)
+    result = await db.execute(select(User).where(User.username == username))
+    user = result.scalar_one_or_none()
     if user is None:
         raise credentials_exception
     return user

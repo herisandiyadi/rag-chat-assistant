@@ -1,8 +1,9 @@
 """Pydantic schemas for API requests/responses."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Union
+from uuid import UUID
 
 
 # Token schemas
@@ -15,35 +16,58 @@ class TokenPayload(BaseModel):
     sub: Optional[str] = None
 
 
-# User schemas
+# Level schemas
+class LevelOut(BaseModel):
+    level: int
+    nama_jabatan: str
+
+    class Config:
+        from_attributes = True
+
+
+# Department schemas
+class DepartmentBase(BaseModel):
+    kode: str
+    nama: str
+
+
+class DepartmentCreate(DepartmentBase):
+    pass
+
+
+class DepartmentOut(DepartmentBase):
+    id: UUID
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+# User schemas (sesuai tabel users di skema PostgreSQL)
 class UserBase(BaseModel):
     username: str
-    email: str
-    full_name: str
 
 
 class UserCreate(UserBase):
     password: str
-    department_id: int
+    department_id: Optional[UUID] = None
     role_type: str = "user"
-    level: int = 1
+    level: Optional[int] = None
 
 
 class UserUpdate(BaseModel):
-    email: Optional[str] = None
-    full_name: Optional[str] = None
     password: Optional[str] = None
-    department_id: Optional[int] = None
+    department_id: Optional[UUID] = None
     role_type: Optional[str] = None
     level: Optional[int] = None
     is_active: Optional[bool] = None
 
 
 class UserOut(UserBase):
-    id: int
-    department_id: int
+    id: UUID
+    department_id: Optional[UUID] = None
     role_type: str
-    level: int
+    level: Optional[int] = None
     is_active: bool
     created_at: datetime
     updated_at: datetime
@@ -57,29 +81,10 @@ class UserList(BaseModel):
     users: List[UserOut]
 
 
-# Department schemas
-class DepartmentBase(BaseModel):
-    name: str
-    description: Optional[str] = None
-
-
-class DepartmentCreate(DepartmentBase):
-    pass
-
-
-class DepartmentOut(DepartmentBase):
-    id: int
-    created_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
 # Document schemas
 class DocumentBase(BaseModel):
-    title: str
-    description: Optional[str] = None
-    department_id: int
+    judul: str
+    department_id: UUID
     min_level: int = 1
     hidden_existence: bool = False
 
@@ -89,11 +94,11 @@ class DocumentCreate(DocumentBase):
 
 
 class DocumentOut(DocumentBase):
-    id: int
+    id: UUID
     doc_id: str
-    version: int
-    file_path: str
-    chunk_count: int
+    versi: int
+    status: str
+    nama_file: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 
@@ -113,7 +118,7 @@ class ChatRequest(BaseModel):
 
 
 class ChatMessage(BaseModel):
-    role: str  # "user" or "assistant"
+    role: str
     content: str
     timestamp: datetime
 
@@ -122,7 +127,7 @@ class ChatResponse(BaseModel):
     session_id: str
     answer: str
     sources: List[Dict[str, Any]] = []
-    status: str  # "success", "access_denied", "not_found"
+    status: str
 
 
 class ChatHistory(BaseModel):
@@ -130,8 +135,7 @@ class ChatHistory(BaseModel):
     messages: List[ChatMessage]
 
 
-# Response status enums
-class AccessStatus(str):
-    ALLOWED = "allowed"
-    DENIED = "denied"
-    NOT_FOUND = "not_found"
+# Response status constants
+ACCESS_SUCCESS = "success"
+ACCESS_DENIED = "access_denied"
+NOT_FOUND = "not_found"

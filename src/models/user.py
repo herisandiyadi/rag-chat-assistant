@@ -5,7 +5,8 @@ from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, CheckConstraint
-from sqlalchemy.dialects.postgresql import UUID, TIMESTAMPTZ
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import TIMESTAMP
 from sqlalchemy.orm import relationship
 
 from src.core.db import Base
@@ -34,10 +35,9 @@ class User(Base):
     role_type = Column(String(20), nullable=False)
     level = Column(Integer, ForeignKey("levels.level"), nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
-    
-    created_at = Column(TIMESTAMPTZ, default=datetime.utcnow, nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), default=datetime.utcnow, nullable=False)
     updated_at = Column(
-        TIMESTAMPTZ, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+        TIMESTAMP(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
     )
     
     # Relationships

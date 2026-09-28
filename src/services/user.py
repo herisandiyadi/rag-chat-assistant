@@ -61,13 +61,10 @@ class UserService:
         user = User(
             username=user_create.username,
             password_hash=get_password_hash(user_create.password),
-            email=user_create.email,
-            full_name=user_create.full_name,
             department_id=user_create.department_id,
             role_type=user_create.role_type,
             level=user_create.level,
         )
-        
         db.add(user)
         await db.commit()
         await db.refresh(user)

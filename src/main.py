@@ -10,6 +10,7 @@ from config.settings import settings
 from src.api import router as api_router
 from src.core.db import engine, Base
 from src.core.logging import setup_logging
+from src.models import department, document, level, user, audit_log  # noqa: F401
 
 # Setup logging
 setup_logging()
@@ -42,7 +43,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="RAG Chat Assistant API",
     description="Internal korporat chat assistant with RAG and access control",
-    version=settings.__version__,
+    version="0.1.0",
     lifespan=lifespan,
 )
 
@@ -59,7 +60,7 @@ app.add_middleware(
 @app.get("/health")
 async def health_check():
     """Health check endpoint."""
-    return {"status": "healthy", "version": settings.__version__}
+    return {"status": "healthy", "version": "0.1.0"}
 
 
 app.include_router(api_router, prefix="/api/v1")
