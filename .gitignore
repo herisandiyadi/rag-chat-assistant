@@ -1,1 +1,41 @@
+# Secrets — JANGAN PERNAH di-commit
 .env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+build/
+dist/
+*.egg-info/
+
+# Docker volumes & data
+pg_data/
+qdrant_data/
+uploads/
+*.pdf
+*.docx
+
+# Logs
+*.log
+logs/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/

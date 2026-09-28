@@ -91,6 +91,17 @@ async def chat_text(sid, data):
         await sio.emit("error", {"kode": "empty", "pesan": "Pertanyaan kosong"}, to=sid)
         return
 
+    # Greeting handling (exact match, hindari false-positive substring)
+    GREETINGS = {"hai", "halo", "hello", "hi", "hey", "salam", "pagi", "siang", "sore", "malam",
+                 "selamat pagi", "selamat siang", "selamat sore", "selamat malam",
+                 "assalamualaikum", "assalamu'alaikum"}
+    q = question.strip().lower().rstrip("!?. ")
+    if q in GREETINGS:
+        balas = "Waalaikumsalam! " if q.startswith("assalamu") else ""
+        await sio.emit("chat:token", {"token": f"{balas}Halo! Ada dokumen departemen apa yang bisa saya bantu cari hari ini?"}, to=sid)
+        await sio.emit("chat:done", {}, to=sid)
+        return
+
     # Get DB session and resolve user (trust boundary)
     db = next(get_db())
     try:
