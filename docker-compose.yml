@@ -1,75 +1,14 @@
-version: '3.8'
-
+# PostgreSQL (rag_postgres, port 5432) dan Qdrant (rag_qdrant, port 6333)
+# sudah berjalan sebagai container terpisah di host ini.
+# App memakai host network supaya langsung menjangkau keduanya lewat
+# localhost tanpa duplikasi service dan konflik port.
+# Bila deploy fresh di VPS baru: tambahkan kembali service postgres & qdrant.
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: rag-postgres
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-rag_assistant}
-      POSTGRES_USER: ${POSTGRES_USER:-rag_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rag_secure_password}
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-rag_user} -d ${POSTGRES_DB:-rag_assistant}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - rag_network
-
-  qdrant:
-    image: qdrant/qdrant:v1.12.0
-    container_name: rag-qdrant
-    ports:
-      - "${QDRANT_PORT:-6333}:6333"
-      - "${QDRANT_GRPC_PORT:-6334}:6334"
-    volumes:
-      - qdrant_data:/qdrant/storage
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6333/readyz"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - rag_network
-
   fastapi-app:
     build:
       context: .
       dockerfile: Dockerfile.app
-    container_name: rag-fastapi
-    ports:
-      - "${APP_PORT:-8000}:8000"
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
-      - QDRANT_URL=${QDRANT_URL:-http://qdrant:6333}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - ELEVENLABS_API_KEY=${ELEVENLABS_API_KEY}
-      - ELEVENLABS_VOICE_ID=${ELEVENLABS_VOICE_ID:-pNInz6obpgDQ4cE13emk}
-      - ELEVENLABS_MODEL_ID=${ELEVENLABS_MODEL_ID:-eleven_turbo_v2}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_ALGORITHM=${JWT_ALGORITHM:-HS256}
-      - JWT_EXPIRE_HOURS=${JWT_EXPIRE_HOURS:-24}
-    env_file:
-      - .env
-    depends_on:
-      postgres:
-        condition: service_healthy
-      qdrant:
-        condition: service_healthy
-    volumes:
-      - ./src:/app/src
-      - ./config:/app/config
-    networks:
-      - rag_network
-
-networks:
-  rag_network:
-    driver: bridge
-
-volumes:
-  postgres_data:
-  qdrant_data:
+    container_name: rag_fastapi
+    network_mode: host
+    env_file: .env
+    restart: unless-stopped

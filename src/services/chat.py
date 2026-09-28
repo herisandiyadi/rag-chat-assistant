@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from src.core.db import get_db
-from src.core.security import resolve_access_permission
+from src.core.access import resolve_access_permission, resolve_user_level
 from src.models.document import Document
 from src.models.user import User
 from src.rag.vector_search import get_vector_search
@@ -75,16 +75,20 @@ class ChatService:
         vector_search = get_vector_search()
         openai_service = OpenAIService()
 
-        # Get user info (PK adalah UUID, jadi query by id via select)
+        # Get user info
         user = await db.get(User, user_id)
         if not user:
             raise ValueError("User not found")
 
-        # Search for relevant chunks
+        # Resolve hierarki level (level_id -> angka dari tabel levels)
+        user_level = await resolve_user_level(db, user)
+
+        # Search Qdrant dengan filter department (level difilter setelah
+        # metadatapath karena min_level bisa berubah via set_payload)
         results = vector_search.search(
             query=question,
             department_filter=user.department_id,
-            min_level_filter=user.level,
+            min_level_filter=None,  # filter level di lapis aplikasi
         )
 
         # Check access and categorize
@@ -104,9 +108,9 @@ class ChatService:
                     has_access, reason = resolve_access_permission(
                         user_department_id=user.department_id,
                         user_role_type=user.role_type,
-                        user_level=user.level,
+                        user_level=user_level,
                         document_department_id=doc.department_id,
-                        document_min_level=doc.min_level,
+                        document_min_level=doc.min_level or 1,
                     )
 
                     if has_access:

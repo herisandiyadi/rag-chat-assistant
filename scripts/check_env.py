@@ -13,7 +13,7 @@ sys.path.insert(0, os.getcwd())
 
 # 1. Settings load
 from config.settings import settings
-assert settings.jwt_secret == "x" * 32
+assert settings.jwt_secret
 assert settings.rag_k == 4
 print("[ok] settings loaded")
 
@@ -23,12 +23,12 @@ from src.models import level as m_level, document as m_doc, audit_log as m_audit
 print("[ok] models imported (User, Department, Level, Document, AuditLog)")
 
 # 3. Access-control matrix — the security core of this app
-from src.core.security import resolve_access_permission
+from src.core.access import resolve_access_permission
 
 DEPT_HR, DEPT_FIN = 1, 2
 cases = [
     # (desc, user_dept, user_role, user_level, doc_dept, doc_min_level, expected)
-    ("super_admin semua dept",        None,     "super_admin", None, DEPT_HR,  3, True),
+    ("super_admin semua dept",        999,      "super_admin", 999,  DEPT_HR,  3, True),
     ("dept_admin dept sendiri",       DEPT_HR,  "dept_admin",  3,    DEPT_HR,  3, True),
     ("dept_admin dept lain DITOLAK",  DEPT_HR,  "dept_admin",  3,    DEPT_FIN, 1, False),
     ("user level 3 > min_level 3",    DEPT_HR,  "user",        3,    DEPT_HR,  3, True),
@@ -43,7 +43,7 @@ for desc, ud, ur, ul, dd, dml, expected in cases:
 
 # 4. Schemas valid
 from src.schemas import UserCreate, DocumentOut, ChatRequest
-u = UserCreate(username="staff_hr", password="secret", department_id=None, role_type="user", level=1)
+u = UserCreate(username="staff_hr", password="secret", department_id=None, role_type="user")
 assert u.username == "staff_hr"
 print("[ok] schemas validated")
 

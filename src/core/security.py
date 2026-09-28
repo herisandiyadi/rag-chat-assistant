@@ -83,6 +83,33 @@ async def require_admin_role(user: User = Depends(get_current_user)) -> User:
     return user
 
 
+async def resolve_user_level(db: AsyncSession, user: User) -> int:
+    """
+    Resolve hierarchy level (angka) from user.level_id via tabel levels.
+
+    Fallback chain bila relasi tidak dimuat:
+    1. user.level_ref.angka  (relationship)
+    2. query tabel levels by level_id
+    3. user.level_id itu sendiri (asumsi id == angka, sesuai seed data)
+    """
+    # 1. relationship sudah dimuat
+    if getattr(user, "level_ref", None) is not None:
+        return user.level_ref.angka
+
+    # 2. query manual
+    if user.level_id is not None:
+        from src.models.level import Level
+        row = (await db.execute(
+            select(Level).where(Level.id == user.level_id)
+        )).scalar_one_or_none()
+        if row is not None:
+            return row.angka
+        # 3. fallback
+        return user.level_id
+
+    return 0
+
+
 def resolve_access_permission(
     user_department_id: int,
     user_role_type: str,
