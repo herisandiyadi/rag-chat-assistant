@@ -1,11 +1,13 @@
 """Chat service with RAG integration."""
 
 import logging
+import asyncio
 import re
 from typing import AsyncGenerator, Dict, Any, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from src.core.db import get_db
 from src.core.access import resolve_access_permission, resolve_user_level
@@ -75,17 +77,21 @@ class ChatService:
         vector_search = get_vector_search()
         openai_service = OpenAIService()
 
-        # Get user info
-        user = await db.get(User, user_id)
+        # Get user info + eager load level (hindari lazy-load di luar await)
+        result = await db.execute(
+            select(User)
+            .options(selectinload(User.level_ref))
+            .where(User.id == user_id)
+        )
+        user = result.scalar_one_or_none()
         if not user:
             raise ValueError("User not found")
 
         # Resolve hierarki level (level_id -> angka dari tabel levels)
         user_level = await resolve_user_level(db, user)
 
-        # Search Qdrant dengan filter department (level difilter setelah
-        # metadatapath karena min_level bisa berubah via set_payload)
-        results = vector_search.search(
+        # Qdrant search (async wrapper di VectorSearch.search)
+        results = await vector_search.search(
             query=question,
             department_filter=user.department_id,
             min_level_filter=None,  # filter level di lapis aplikasi

@@ -1,5 +1,6 @@
 """Vector search and RAG orchestration."""
 
+import asyncio
 import logging
 from typing import List, Dict, Any, Optional
 
@@ -20,7 +21,7 @@ class VectorSearch:
         self.collection_name = "documents"
         self.embedding_model = get_embedding_model()
     
-    def search(
+    async def search(
         self,
         query: str,
         department_filter: Optional[int] = None,
@@ -29,18 +30,16 @@ class VectorSearch:
         score_threshold: float = settings.rag_score_threshold,
     ) -> List[ScoredPoint]:
         """
-        Search for relevant document chunks.
-        
-        Args:
-            query: User question
-            department_filter: Department ID to filter results
-            min_level_filter: Minimum level required
-            k: Number of results to return
-            score_threshold: Minimum similarity score threshold
-            
-        Returns:
-            List of scored points matching the query
+        Search for relevant document chunks (ASYNC wrapper).
         """
+        # Jalankan di executor agar tidak memblokir event loop
+        return await asyncio.to_thread(
+            self._search_sync, query, department_filter, min_level_filter, k, score_threshold
+        )
+
+    def _search_sync(
+        self, query, department_filter, min_level_filter, k, score_threshold
+    ) -> List[ScoredPoint]:
         # Generate embedding for query
         query_embedding = self.embedding_model.encode(query).tolist()
         

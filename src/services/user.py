@@ -1,7 +1,7 @@
 """User service for authentication and management."""
 
 import logging
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select

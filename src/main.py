@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from config.settings import settings
-from src.api import router as api_router
+from src.api.router import router as api_router
 from src.core.db import engine, Base
 from src.core.logging import setup_logging
 from src.models import department, document, level, user, audit_log  # noqa: F401
@@ -29,10 +29,10 @@ async def lifespan(app: FastAPI):
         await conn.run_sync(Base.metadata.create_all)
     logger.info("Database tables created/verified")
     
-    # Load embedding model
-    from src.core.embedding import get_embedding_model
-    get_embedding_model()
-    logger.info("Embedding model loaded")
+    # Load embedding model (hanya warmup jika cache sudah ada)
+    from src.core.embedding import warmup_if_available
+    warmup_if_available()
+    logger.info("Application ready")
     
     yield
     

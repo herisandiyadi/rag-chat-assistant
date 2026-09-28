@@ -9,29 +9,32 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Torch CPU wheel dulu (~200MB, dari index resmi PyTorch — jauh lebih kecil
 # daripada wheel default PyPI yang membundel CUDA ~2GB dan sering timeout).
-# Dipasang SEBELUM requirements supaya sentence-transformers tidak menarik
-# torch versi CUDA.
-RUN pip install --retries 10 --timeout 60 --no-cache-dir --user \
+RUN pip install --retries 10 --timeout 60 --no-cache-dir \
     torch==2.5.0 --index-url https://download.pytorch.org/whl/cpu
 
 COPY requirements.txt .
-RUN pip install --retries 10 --timeout 60 --no-cache-dir --user -r requirements.txt
+RUN pip install --retries 10 --timeout 60 --no-cache-dir -r requirements.txt
 
 # Final stage
 FROM python:3.11-slim
 
 WORKDIR /app
 
-RUN groupadd -r appgroup && useradd -r -g appgroup appuser
+# Cache transformer model di /app/.cache (writable, ikut image atau volume).
+# ponytail: pakai root user — container internal di host terpercaya.
+# Upgrade path saat deploy produksi publik: ganti ke USER appuser + volume
+# terpisah dengan chown yang benar.
+ENV HF_HOME=/app/.cache/huggingface
+ENV TRANSFORMERS_CACHE=/app/.cache/huggingface
+ENV SENTENCE_TRANSFORMERS_HOME=/app/.cache/huggingface
+RUN mkdir -p /app/.cache/huggingface && chmod -R 777 /app/.cache
 
-COPY --from=builder /root/.local /home/appuser/.local
-ENV PATH=/home/appuser/.local/bin:$PATH
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
-COPY --chown=appuser:appgroup src/ ./src/
-COPY --chown=appuser:appgroup config/ ./config/
+COPY src/ ./src/
+COPY config/ ./config/
 
-USER appuser
 EXPOSE 8000
 
-# --reload dihapus: watcher proses tambahan hanya untuk dev, boros memori.
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]

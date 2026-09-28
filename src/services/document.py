@@ -12,7 +12,7 @@ from src.core.db import get_db
 from src.models.document import Document
 from src.models.user import User
 from src.rag.vector_search import get_vector_search
-from src.schemas import DocumentCreate, DocumentOut
+from src.schemas import DocumentOut, DocumentList
 
 logger = logging.getLogger(__name__)
 

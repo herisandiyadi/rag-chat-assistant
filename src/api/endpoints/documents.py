@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.db import get_db
 from src.core import security
-from src.schemas import DocumentOut, DocumentCreate, DocumentList
+from src.schemas import DocumentOut, DocumentList
 from src.services.document import DocumentService
 
 router = APIRouter()
